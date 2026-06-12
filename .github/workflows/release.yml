@@ -38,8 +38,6 @@ jobs:
           git fetch origin packages:packages || echo "packages branch not found on remote"
           git checkout packages || git checkout -b packages
 
-          ls
-
           cp *.sbpack "$PACKS_DIR/" 2>/dev/null || true
           cp *.sbpatch "$PACKS_DIR/" 2>/dev/null || true
 
@@ -50,11 +48,20 @@ jobs:
           # Rebuild packs forward to ensure the base for the new patch is ready
           for TAG in $ALL_TAGS; do
             NEXT_TAG=$(echo "$ALL_TAGS" | grep -A1 "^$TAG$" | tail -n1)
-            printf "Processing tag %s, next tag is %s\n" "$TAG" "$NEXT_TAG"
-            ls
-            if [ "$TAG" != "$NEXT_TAG" ] && [ -f "$TAG.sbpack"  ] && [ -f "$NEXT_TAG.sbpatch" ]; then
-              printf "Rebuilding pack for %s based on %s\n" "$NEXT_TAG" "$TAG"
-              sbutils patch "$TAG.sbpack" "$NEXT_TAG.sbpatch" "$NEXT_TAG.sbpack"
+            if [ "$TAG" != "$NEXT_TAG" ] && [ -f "$TAG.sbpack" ]; then
+              if [ -f "$NEXT_TAG.sbpatch" ]; then
+                sbutils patch "$TAG.sbpack" "$NEXT_TAG.sbpatch" "$NEXT_TAG.sbpack"
+              else
+                # Check for split parts
+                PARTS=$(ls "${NEXT_TAG}_"*.sbpatch 2>/dev/null | sort -V)
+                if [ -n "$PARTS" ]; then
+                  TMP_BASE="$TAG.sbpack"
+                  for PART in $PARTS; do
+                    sbutils patch "$TMP_BASE" "$PART" "$NEXT_TAG.sbpack"
+                    TMP_BASE="$NEXT_TAG.sbpack"
+                  done
+                fi
+              fi
             fi
           done
       - name: Package and Commit
