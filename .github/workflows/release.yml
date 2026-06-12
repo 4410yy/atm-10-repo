@@ -51,3 +51,12 @@ jobs:
           git add {{ github.ref.name }}.sbpatch
           git commit -m "Add package for {{ github.ref.name }}"
           git push origin packages --force
+      - name: Add package to manifest
+        run: |
+          git checkout master --force
+          ASSET_URL=$(gh release view {{ github.ref.name }} --json assets -q '.assets[0].url')
+          # sbutils repo add <id> <type(sbpack|sbpatch)> <file_path> <remote_url>
+          sbutils repo add {{ github.ref.name }} sbpatch {{ github.ref.name }}.sbpatch ${ASSET_URL}
+          git add manifest.json
+          git commit -m "Add package {{ github.ref.name }} to manifest"
+          git push origin master

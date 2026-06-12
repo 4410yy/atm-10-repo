@@ -1,0 +1,14 @@
+{
+  "name": "atm-10-repo",
+  "patches": [
+    {
+      "id": "base",
+      "type": "sbpack",
+      "hash": {
+        "sha256": "12def5f76d590c414bd0b77230cb279bc7ae35e936ca848185bc8850805eaaf4"
+      },
+      "remote_path": "https://github.com/ikafly144/atm-10-repo/releases/download/base/base.sbpack",
+      "timestamp": 1781269321
+    }
+  ]
+}
