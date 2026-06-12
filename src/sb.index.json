@@ -1,7 +1,7 @@
 {
   "formatVersion": 2,
   "name": "ATM 10 - All the Mods",
-  "id": "019ebbba-3c8d-7588-a81c-41915157f84c",
+  "id": "019ebbed-ec3f-75cd-9967-7827852671ab",
   "dependencies": {
     "minecraft": "1.21.1",
     "neoforge": "21.1.228"
