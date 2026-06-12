@@ -47,7 +47,7 @@ jobs:
           done
       - name: Package and Commit
         run: |
-          git checkout master
+          git checkout master --force
           PACKS_DIR="${{ runner.temp }}/packs"
           sbutils pack src/ "$PACKS_DIR/${{ github.ref_name }}.sbpack"
 
@@ -55,7 +55,7 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/sb.index.json
           git commit -m "Update sb.index.json for ${{ github.ref_name }}" || echo "No changes to index"
-          git push origin master
+          git push origin master --force
       - name: Create Patch
         env:
           LAST_TAG: ${{ steps.restore_pack.outputs.last_tag }}
@@ -101,7 +101,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout packages || git checkout -b packages
-          
+
           # Initialize Git LFS and track large binary types
           git lfs install
           git lfs track "*.sbpack"
@@ -114,7 +114,7 @@ jobs:
           else
             cp "$PACKS_DIR/${{ github.ref_name }}.sbpatch" .
           fi
-          
+
           git add *.sbpatch
           git commit -m "Add package for ${{ github.ref_name }}"
           git push origin packages --force
@@ -125,8 +125,8 @@ jobs:
             echo "No patch file, skipping manifest update."
             exit 0
           fi
-          git checkout master
-          
+          git checkout master --force
+
           # Determine which files to add (split parts or original)
           if ls "$PACKS_DIR/${{ github.ref_name }}_"*.sbpatch 1> /dev/null 2>&1; then
             PATCH_FILES=$(ls "$PACKS_DIR/${{ github.ref_name }}_"*.sbpatch | sort -V)
@@ -145,4 +145,4 @@ jobs:
 
           git add manifest.json
           git commit -m "Add package ${{ github.ref_name }} to manifest"
-          git push origin master
+          git push origin master --force
