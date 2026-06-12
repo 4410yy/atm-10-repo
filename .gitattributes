@@ -1,0 +1,2 @@
+*.sbpack filter=lfs diff=lfs merge=lfs -text
+*.sbpatch filter=lfs diff=lfs merge=lfs -text
