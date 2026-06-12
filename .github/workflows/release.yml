@@ -16,49 +16,90 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Get Last Tag
-        id: get_last_tag
-        run: echo "last_tag=$(git describe --tags --abrev=0)" >> $GITHUB_OUTPUT
+        with:
+          fetch-depth: 0
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
           go-version: stable
       - name: Install tools
         run: go install github.com/ikafly144/sabalauncher/v2/cmd/sbutils@latest
+      - name: Restore Last Pack
+        id: restore_pack
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 ${{ github.ref_name }}^ 2>/dev/null || echo "")
+          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+
+          PACKS_DIR="${{ runner.temp }}/packs"
+          mkdir -p "$PACKS_DIR"
+
+          git switch packages || git checkout -b packages
+          cp *.sbpack "$PACKS_DIR/" 2>/dev/null || true
+          cp *.sbpatch "$PACKS_DIR/" 2>/dev/null || true
+
+          cd "$PACKS_DIR"
+          # Rebuild packs forward to ensure the base for the new patch is ready
+          for TAG in $(git tag --sort=creatordate); do
+            NEXT_TAG=$(git tag --sort=creatordate | grep -A1 "^$TAG$" | tail -n1)
+            if [ "$TAG" != "$NEXT_TAG" ] && [ -f "$TAG.sbpack" ] && [ -f "$NEXT_TAG.sbpatch" ]; then
+              sbutils patch "$TAG.sbpack" "$NEXT_TAG.sbpatch" "$NEXT_TAG.sbpack"
+            fi
+          done
       - name: Package and Commit
         run: |
-          sbutils pack src/ ${{ github.ref.name }}.sbpack
+          git checkout master
+          PACKS_DIR="${{ runner.temp }}/packs"
+          sbutils pack src/ "$PACKS_DIR/${{ github.ref.name }}.sbpack"
+
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/sb.index.json
-          git commit -m "Update sb.index.json for ${{ github.ref.name }}"
+          git commit -m "Update sb.index.json for ${{ github.ref.name }}" || echo "No changes to index"
           git push origin master
       - name: Create Patch
         env:
-          LAST_TAG: ${{ steps.get_last_tag.outputs.last_tag }}
+          LAST_TAG: ${{ steps.restore_pack.outputs.last_tag }}
         run: |
-          git switch packages || git checkout -b packages
-          sbutils diff ${LAST_TAG}.sbpack ${{ github.ref.name }}.sbpack ${{ github.ref.name }}.sbpatch
+          if [ -z "$LAST_TAG" ]; then
+            echo "No previous tag found, skipping patch creation."
+            exit 0
+          fi
+          PACKS_DIR="${{ runner.temp }}/packs"
+          sbutils diff "$PACKS_DIR/${LAST_TAG}.sbpack" "$PACKS_DIR/${{ github.ref.name }}.sbpack" "$PACKS_DIR/${{ github.ref.name }}.sbpatch"
+          sbutils split "$PACKS_DIR/${LAST_TAG}.sbpack" "$PACKS_DIR/${{ github.ref.name }}.sbpatch" "$PACKS_DIR/${{ github.ref.name }}" 100
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: "${{ github.ref.name }}.sbpack ${{ github.ref.name }}.sbpatch"
+          files: |
+            ${{ runner.temp }}/packs/${{ github.ref.name }}.sbpack
+            ${{ runner.temp }}/packs/${{ github.ref.name }}.sbpatch
+            ${{ runner.temp }}/packs/${{ github.ref.name }}_*.sbpatch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Push to Package Branch
         run: |
+          PACKS_DIR="${{ runner.temp }}/packs"
+          if [ ! -f "$PACKS_DIR/${{ github.ref.name }}.sbpatch" ]; then
+            echo "No patch file to push, skipping."
+            exit 0
+          fi
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b packages
-          git add ${{ github.ref.name }}.sbpatch
+          git checkout packages || git checkout -b packages
+          cp "$PACKS_DIR/${{ github.ref.name }}.sbpatch" .
+          git add "${{ github.ref.name }}.sbpatch"
           git commit -m "Add package for ${{ github.ref.name }}"
           git push origin packages --force
       - name: Add package to manifest
         run: |
-          git checkout master --force
-          ASSET_URL=$(gh release view ${{ github.ref.name }} --json assets -q '.assets[0].url')
-          # sbutils repo add <id> <type(sbpack|sbpatch)> <file_path> <remote_url>
-          sbutils repo add ${{ github.ref.name }} sbpatch ${{ github.ref.name }}.sbpatch ${ASSET_URL}
+          PACKS_DIR="${{ runner.temp }}/packs"
+          if [ ! -f "$PACKS_DIR/${{ github.ref.name }}.sbpatch" ]; then
+            echo "No patch file, skipping manifest update."
+            exit 0
+          fi
+          git checkout master
+          ASSET_URL=$(gh release view ${{ github.ref_name }} --json assets -q ".assets[] | select(.name == \"${{ github.ref.name }}.sbpatch\") | .url")
+          sbutils repo add "${{ github.ref.name }}" sbpatch "$PACKS_DIR/${{ github.ref.name }}.sbpatch" "${ASSET_URL}"
           git add manifest.json
           git commit -m "Add package ${{ github.ref.name }} to manifest"
           git push origin master
