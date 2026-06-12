@@ -19,6 +19,10 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Fetch branches
+        run: |
+          git fetch origin master:master || true
+          git fetch origin packages:packages || true
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -34,8 +38,7 @@ jobs:
           PACKS_DIR="${{ runner.temp }}/packs"
           mkdir -p "$PACKS_DIR"
 
-          # Ensure local packages branch exists and tracks remote
-          git fetch origin packages:packages || echo "packages branch not found on remote"
+          # Use the local packages branch we just fetched
           git checkout packages || git checkout -b packages
 
           cp *.sbpack "$PACKS_DIR/" 2>/dev/null || true
