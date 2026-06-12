@@ -119,6 +119,8 @@ jobs:
           git commit -m "Add package for ${{ github.ref_name }}"
           git push origin packages --force
       - name: Add package to manifest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PACKS_DIR="${{ runner.temp }}/packs"
           if [ ! -f "$PACKS_DIR/${{ github.ref_name }}.sbpatch" ]; then
