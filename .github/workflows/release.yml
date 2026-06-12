@@ -41,10 +41,13 @@ jobs:
           cp *.sbpack "$PACKS_DIR/" 2>/dev/null || true
           cp *.sbpatch "$PACKS_DIR/" 2>/dev/null || true
 
+          # Store tags before changing directory to temporary space
+          ALL_TAGS=$(git tag --sort=creatordate)
+
           cd "$PACKS_DIR"
           # Rebuild packs forward to ensure the base for the new patch is ready
-          for TAG in $(git tag --sort=creatordate); do
-            NEXT_TAG=$(git tag --sort=creatordate | grep -A1 "^$TAG$" | tail -n1)
+          for TAG in $ALL_TAGS; do
+            NEXT_TAG=$(echo "$ALL_TAGS" | grep -A1 "^$TAG$" | tail -n1)
             if [ "$TAG" != "$NEXT_TAG" ] && [ -f "$TAG.sbpack" ] && [ -f "$NEXT_TAG.sbpatch" ]; then
               sbutils patch "$TAG.sbpack" "$NEXT_TAG.sbpatch" "$NEXT_TAG.sbpack"
             fi
