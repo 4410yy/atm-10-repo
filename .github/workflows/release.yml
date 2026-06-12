@@ -93,7 +93,7 @@ jobs:
           FILES=""
           if ls "$PACKS_DIR/${{ github.ref_name }}_"*.sbpatch 1> /dev/null 2>&1; then
             # If split parts exist, add them instead of the original
-            for f in "$PACKS_DIR/${{ github.ref_name }}_"*.sbpatch; do
+            for f in $(ls "$PACKS_DIR/${{ github.ref_name }}_"*.sbpatch | sort -V); do
               FILES="${FILES}${f}"$'\n'
             done
           else
