@@ -4,6 +4,7 @@
   "id": "019ebc5f-b3d0-76a4-ac5a-8ed2073a7ffe",
   "properties": {
     "icon": "icon.png",
+    "description": "ATM 10",
     "quickLaunch": {
       "multiplayer": "mc.4410yy.org"
     },
