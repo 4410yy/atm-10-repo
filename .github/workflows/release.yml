@@ -68,12 +68,27 @@ jobs:
           sbutils diff "$PACKS_DIR/${LAST_TAG}.sbpack" "$PACKS_DIR/${{ github.ref.name }}.sbpack" "$PACKS_DIR/${{ github.ref.name }}.sbpatch"
           sbutils split "$PACKS_DIR/${LAST_TAG}.sbpack" "$PACKS_DIR/${{ github.ref.name }}.sbpatch" "$PACKS_DIR/${{ github.ref.name }}" 100
       - name: Create Release
+        id: release_files
+        run: |
+          PACKS_DIR="${{ runner.temp }}/packs"
+          FILES="${{ runner.temp }}/packs/${{ github.ref.name }}.sbpack"
+          if ls "$PACKS_DIR/${{ github.ref.name }}_"*.sbpatch 1> /dev/null 2>&1; then
+            # If split parts exist, add them instead of the original
+            for f in "$PACKS_DIR/${{ github.ref.name }}_"*.sbpatch; do
+              FILES="${FILES}"$'\n'"${f}"
+            done
+          else
+            # Add original patch
+            FILES="${FILES}"$'\n'"$PACKS_DIR/${{ github.ref.name }}.sbpatch"
+          fi
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            ${{ runner.temp }}/packs/${{ github.ref.name }}.sbpack
-            ${{ runner.temp }}/packs/${{ github.ref.name }}.sbpatch
-            ${{ runner.temp }}/packs/${{ github.ref.name }}_*.sbpatch
+          files: ${{ steps.release_files.outputs.files }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Push to Package Branch
@@ -86,8 +101,21 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout packages || git checkout -b packages
-          cp "$PACKS_DIR/${{ github.ref.name }}.sbpatch" .
-          git add "${{ github.ref.name }}.sbpatch"
+          
+          # Initialize Git LFS and track large binary types
+          git lfs install
+          git lfs track "*.sbpack"
+          git lfs track "*.sbpatch"
+          git add .gitattributes
+
+          # Use split parts if they exist, otherwise the original
+          if ls "$PACKS_DIR/${{ github.ref.name }}_"*.sbpatch 1> /dev/null 2>&1; then
+            cp "$PACKS_DIR/${{ github.ref.name }}_"*.sbpatch .
+          else
+            cp "$PACKS_DIR/${{ github.ref.name }}.sbpatch" .
+          fi
+          
+          git add *.sbpatch
           git commit -m "Add package for ${{ github.ref.name }}"
           git push origin packages --force
       - name: Add package to manifest
@@ -98,8 +126,23 @@ jobs:
             exit 0
           fi
           git checkout master
-          ASSET_URL=$(gh release view ${{ github.ref_name }} --json assets -q ".assets[] | select(.name == \"${{ github.ref.name }}.sbpatch\") | .url")
-          sbutils repo add "${{ github.ref.name }}" sbpatch "$PACKS_DIR/${{ github.ref.name }}.sbpatch" "${ASSET_URL}"
+          
+          # Determine which files to add (split parts or original)
+          if ls "$PACKS_DIR/${{ github.ref.name }}_"*.sbpatch 1> /dev/null 2>&1; then
+            PATCH_FILES=$(ls "$PACKS_DIR/${{ github.ref.name }}_"*.sbpatch | sort -V)
+          else
+            PATCH_FILES="$PACKS_DIR/${{ github.ref.name }}.sbpatch"
+          fi
+
+          # Add each patch file to the manifest
+          for f in $PATCH_FILES; do
+            FNAME=$(basename "$f")
+            # Use filename without extension as ID (e.g., v1.0.0_0 or v1.0.0)
+            ID="${FNAME%.sbpatch}"
+            ASSET_URL=$(gh release view ${{ github.ref_name }} --json assets -q ".assets[] | select(.name == \"$FNAME\") | .url")
+            sbutils repo add "$ID" sbpatch "$f" "${ASSET_URL}"
+          done
+
           git add manifest.json
           git commit -m "Add package ${{ github.ref.name }} to manifest"
           git push origin master
