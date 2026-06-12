@@ -2,6 +2,13 @@
   "formatVersion": 2,
   "name": "ATM 10 - All the Mods",
   "id": "019ebc27-2375-7e58-86ed-e00644cbcd50",
+  "properties": {
+    "icon": "icon.png",
+    "quickLaunch": {
+      "multiplayer": "mc.4410yy.org"
+    },
+    "memory": 8192
+  },
   "dependencies": {
     "minecraft": "1.21.1",
     "neoforge": "21.1.228"
