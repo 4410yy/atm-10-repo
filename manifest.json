@@ -11,24 +11,6 @@
       "timestamp": 1781269321
     },
     {
-      "id": "2026.06.12.0001_1",
-      "type": "sbpatch",
-      "hash": {
-        "sha256": "d4db5cff4761fc3cfb4c1283c85fb3cd3e481ff245ce543b354fd3d11be97add"
-      },
-      "remote_path": "https://github.com/ikafly144/atm-10-repo/releases/download/2026.06.12.0001/2026.06.12.0001_1.sbpatch",
-      "timestamp": 1781273171
-    },
-    {
-      "id": "2026.06.12.0001_2",
-      "type": "sbpatch",
-      "hash": {
-        "sha256": "2fcb13b302816ff42d066bb7463592da002f6707563f73f44888532ce73af3b3"
-      },
-      "remote_path": "https://github.com/ikafly144/atm-10-repo/releases/download/2026.06.12.0001/2026.06.12.0001_2.sbpatch",
-      "timestamp": 1781273171
-    },
-    {
       "id": "2026.06.13.0001_1",
       "type": "sbpatch",
       "hash": {
