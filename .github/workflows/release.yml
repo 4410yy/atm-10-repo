@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          lfs: true
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -33,7 +34,10 @@ jobs:
           PACKS_DIR="${{ runner.temp }}/packs"
           mkdir -p "$PACKS_DIR"
 
-          git switch packages && git pull origin packages
+          # Ensure local packages branch exists and tracks remote
+          git fetch origin packages:packages || echo "packages branch not found on remote"
+          git checkout packages || git checkout -b packages
+
           cp *.sbpack "$PACKS_DIR/" 2>/dev/null || true
           cp *.sbpatch "$PACKS_DIR/" 2>/dev/null || true
 
@@ -100,7 +104,9 @@ jobs:
           fi
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout packages || git checkout -b packages
+
+          # Use the local packages branch we fetched earlier
+          git checkout packages
 
           # Initialize Git LFS and track large binary types
           git lfs install
