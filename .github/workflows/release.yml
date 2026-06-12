@@ -2,8 +2,6 @@ name: Release
 
 on:
   push:
-    branches:
-      - master
     tags:
       - "*"
 
@@ -18,6 +16,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Get Last Tag
+        id: get_last_tag
+        run: echo "last_tag=$(git describe --tags --abrev=0)" >> $GITHUB_OUTPUT
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -26,21 +27,22 @@ jobs:
         run: go install github.com/ikafly144/sabalauncher/v2/cmd/sbutils@latest
       - name: Package and Commit
         run: |
-          sbutils pack src/ {{ github.ref.name }}.sbpack
+          sbutils pack src/ ${{ github.ref.name }}.sbpack
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/sb.index.json
-          git commit -m "Update sb.index.json for {{ github.ref.name }}"
+          git commit -m "Update sb.index.json for ${{ github.ref.name }}"
           git push origin master
       - name: Create Patch
+        env:
+          LAST_TAG: ${{ steps.get_last_tag.outputs.last_tag }}
         run: |
           git switch packages || git checkout -b packages
-          LAST_TAG=$(git describe --tags --abbrev=0)
-          sbutils diff ${LAST_TAG}.sbpack {{ github.ref.name }}.sbpack {{ github.ref.name }}.sbpatch
+          sbutils diff ${LAST_TAG}.sbpack ${{ github.ref.name }}.sbpack ${{ github.ref.name }}.sbpatch
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: "{{ github.ref.name }}.sbpack {{ github.ref.name }}.sbpatch"
+          files: "${{ github.ref.name }}.sbpack ${{ github.ref.name }}.sbpatch"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Push to Package Branch
@@ -48,15 +50,15 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b packages
-          git add {{ github.ref.name }}.sbpatch
-          git commit -m "Add package for {{ github.ref.name }}"
+          git add ${{ github.ref.name }}.sbpatch
+          git commit -m "Add package for ${{ github.ref.name }}"
           git push origin packages --force
       - name: Add package to manifest
         run: |
           git checkout master --force
-          ASSET_URL=$(gh release view {{ github.ref.name }} --json assets -q '.assets[0].url')
+          ASSET_URL=$(gh release view ${{ github.ref.name }} --json assets -q '.assets[0].url')
           # sbutils repo add <id> <type(sbpack|sbpatch)> <file_path> <remote_url>
-          sbutils repo add {{ github.ref.name }} sbpatch {{ github.ref.name }}.sbpatch ${ASSET_URL}
+          sbutils repo add ${{ github.ref.name }} sbpatch ${{ github.ref.name }}.sbpatch ${ASSET_URL}
           git add manifest.json
-          git commit -m "Add package {{ github.ref.name }} to manifest"
+          git commit -m "Add package ${{ github.ref.name }} to manifest"
           git push origin master
