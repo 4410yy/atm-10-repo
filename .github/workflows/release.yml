@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+  deployments: write
+  packages: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - name: Install tools
+        run: go install github.com/ikafly144/sabalauncher/v2/cmd/sbutils@latest
+      - name: Package and Commit
+        run: |
+          sbutils pack src/ {{ github.ref.name }}.sbpack
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/sb.index.json
+          git commit -m "Update sb.index.json for {{ github.ref.name }}"
+          git push origin master
+      - name: Create Patch
+        run: |
+          git switch packages || git checkout -b packages
+          LAST_TAG=$(git describe --tags --abbrev=0)
+          sbutils diff ${LAST_TAG}.sbpack {{ github.ref.name }}.sbpack {{ github.ref.name }}.sbpatch
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "{{ github.ref.name }}.sbpack {{ github.ref.name }}.sbpatch"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push to Package Branch
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b packages
+          git add {{ github.ref.name }}.sbpatch
+          git commit -m "Add package for {{ github.ref.name }}"
+          git push origin packages --force
