@@ -162,6 +162,15 @@
       },
       "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.13.0001/2026.06.13.0001_17.sbpatch",
       "timestamp": 1781281820
+    },
+    {
+      "id": "2026.06.13.0002_1",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "d27279c15ae2aa62e5559cb34acb2e931dded3e443091b403f6fcca53e8f7077"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.13.0002/2026.06.13.0002_1.sbpatch",
+      "timestamp": 1781287621
     }
   ]
 }
