@@ -44,13 +44,18 @@ jobs:
           cp *.sbpack "$PACKS_DIR/" 2>/dev/null || true
           cp *.sbpatch "$PACKS_DIR/" 2>/dev/null || true
 
-          # Store tags before changing directory to temporary space
-          ALL_TAGS=$(git tag --sort=creatordate)
+          # Collect the linear chain of tags leading to the current release
+          TAG_CHAIN=""
+          C_TAG="${{ github.ref_name }}"
+          while [ -n "$C_TAG" ]; do
+            TAG_CHAIN="$C_TAG $TAG_CHAIN"
+            C_TAG=$(git describe --tags --abbrev=0 "$C_TAG^" 2>/dev/null || echo "")
+          done
 
           cd "$PACKS_DIR"
-          # Rebuild packs forward to ensure the base for the new patch is ready
-          for TAG in $ALL_TAGS; do
-            NEXT_TAG=$(echo "$ALL_TAGS" | grep -A1 "^$TAG$" | tail -n1)
+          # Rebuild packs forward along the tag chain
+          for TAG in $TAG_CHAIN; do
+            NEXT_TAG=$(echo "$TAG_CHAIN" | tr ' ' '\n' | grep -A1 "^$TAG$" | tail -n1)
             if [ "$TAG" != "$NEXT_TAG" ] && [ -f "$TAG.sbpack" ]; then
               if [ -f "$NEXT_TAG.sbpatch" ]; then
                 sbutils patch "$TAG.sbpack" "$NEXT_TAG.sbpatch" "$NEXT_TAG.sbpack"
@@ -58,10 +63,11 @@ jobs:
                 # Check for split parts
                 PARTS=$(ls "${NEXT_TAG}_"*.sbpatch 2>/dev/null | sort -V)
                 if [ -n "$PARTS" ]; then
-                  TMP_BASE="$TAG.sbpack"
+                  # Use a temporary file to avoid potential input/output collision
+                  cp "$TAG.sbpack" "$NEXT_TAG.sbpack"
                   for PART in $PARTS; do
-                    sbutils patch "$TMP_BASE" "$PART" "$NEXT_TAG.sbpack"
-                    TMP_BASE="$NEXT_TAG.sbpack"
+                    sbutils patch "$NEXT_TAG.sbpack" "$PART" "$NEXT_TAG.sbpack.tmp"
+                    mv "$NEXT_TAG.sbpack.tmp" "$NEXT_TAG.sbpack"
                   done
                 fi
               fi
