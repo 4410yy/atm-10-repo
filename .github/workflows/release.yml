@@ -33,7 +33,7 @@ jobs:
           PACKS_DIR="${{ runner.temp }}/packs"
           mkdir -p "$PACKS_DIR"
 
-          git switch packages || git checkout -b packages
+          git switch packages && git pull origin packages
           cp *.sbpack "$PACKS_DIR/" 2>/dev/null || true
           cp *.sbpatch "$PACKS_DIR/" 2>/dev/null || true
 
