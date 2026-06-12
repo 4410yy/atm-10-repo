@@ -1,7 +1,7 @@
 {
   "formatVersion": 2,
   "name": "ATM 10 - All the Mods",
-  "id": "019ebca9-6330-7816-a4ca-838b02eb3f5a",
+  "id": "019ebd03-47dc-73e9-a995-b81690734351",
   "properties": {
     "icon": "icon.png",
     "description": "ATM 10",
@@ -3707,6 +3707,7 @@
     "mods/xycraft_world-0.7.53.jar": "b62397bb7d8cadf5bf34b4b57b45ac1fab055f5cf4e3f13559746508fc856606",
     "mods/yeetusexperimentus-neoforge-87.0.0.jar": "9117db8b5905abf18f64fdf8f8d8ca5a91c23abd0a7fa2c9986c21aa17d74e75",
     "mods/yet_another_config_lib_v3-3.8.2+1.21.1-neoforge.jar": "b5c30321b46cfaa521645a04aff89d2804d8167a25bb23ad4b1ae8da73093a2f",
-    "options.txt": "80881b5dbf99a799657d7fe794a88e8f2bdc3314abcf4831876a00d77b70b0ee"
+    "options.txt": "d2090ccd1c8544ce41943cf1e7388e501845612eb823d04634a69314977baf27",
+    "servers.dat": "36e50290c3f0220e204e83408a1ebe46bb106fde818721f88c4c6597a7901d50"
   }
 }
