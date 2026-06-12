@@ -171,6 +171,150 @@
       },
       "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0002/2026.06.12.0002_16.sbpatch",
       "timestamp": 1781276983
+    },
+    {
+      "id": "2026.06.12.0003_1",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "6a2c8e1a1c78a0363edcfdbf49f4b2485e563fd4001bcc9f65d5b377f03b1eed"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_1.sbpatch",
+      "timestamp": 1781279573
+    },
+    {
+      "id": "2026.06.12.0003_2",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "93d299dc8df320652a4debccb0cb33958033a74394296dc94972c718b96f8727"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_2.sbpatch",
+      "timestamp": 1781279573
+    },
+    {
+      "id": "2026.06.12.0003_3",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "f35a390c473e3b6eaf1e6d9cab519c23b2b2adb926e90c827e6733ad00c1d692"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_3.sbpatch",
+      "timestamp": 1781279574
+    },
+    {
+      "id": "2026.06.12.0003_4",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "3666f5741c581e3c5a822e23520c5bb04f09087820ac956331c546fae13ba588"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_4.sbpatch",
+      "timestamp": 1781279574
+    },
+    {
+      "id": "2026.06.12.0003_5",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "272c06c58ecaccab43ac198b0adfddab6540516e2bc01aad08f9bd5b3de9214f"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_5.sbpatch",
+      "timestamp": 1781279574
+    },
+    {
+      "id": "2026.06.12.0003_6",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "71f31e10d6b3468b50e4139c760c0c6d892d4be7e3f17e8d8e1fcbe43f52e0fe"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_6.sbpatch",
+      "timestamp": 1781279575
+    },
+    {
+      "id": "2026.06.12.0003_7",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "80a3b475721bfb77ec5ac171044f818b325845424b2966f4b373f528e5f372d0"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_7.sbpatch",
+      "timestamp": 1781279575
+    },
+    {
+      "id": "2026.06.12.0003_8",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "471313bf8882a67a78e182489761dcb8bff406ccbca03de34391605f883bb686"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_8.sbpatch",
+      "timestamp": 1781279576
+    },
+    {
+      "id": "2026.06.12.0003_9",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "6a0928bdf47798c2cf7569ac67d4be8dba7ef0dcbd62e0714ed6b0b269813be4"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_9.sbpatch",
+      "timestamp": 1781279576
+    },
+    {
+      "id": "2026.06.12.0003_10",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "0faab8c003634e1bba955941a338f21789ebcb0122ae0eb21a78b52c056c68af"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_10.sbpatch",
+      "timestamp": 1781279576
+    },
+    {
+      "id": "2026.06.12.0003_11",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "aebab931f4bb4044ab2aa8f53256b7294b95d57a6c3af72d7edeaa7f71f63b59"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_11.sbpatch",
+      "timestamp": 1781279577
+    },
+    {
+      "id": "2026.06.12.0003_12",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "f5e745c7a905ca28fbbea70fa5b25268fee0165eb69286a6641a3ff0de21a9dd"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_12.sbpatch",
+      "timestamp": 1781279577
+    },
+    {
+      "id": "2026.06.12.0003_13",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "c9fb884424e2672c2592a47332d2e28e49f798552de04aa831d7183ae92cbe67"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_13.sbpatch",
+      "timestamp": 1781279577
+    },
+    {
+      "id": "2026.06.12.0003_14",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "acde6ef7684091a2b8aa99244fc7ad5b17a13acc4c727e0259160cfff26bbbe3"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_14.sbpatch",
+      "timestamp": 1781279578
+    },
+    {
+      "id": "2026.06.12.0003_15",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "8b8d31e056a32e2a1cebef79e702f05c67c5d3c441fc26b2a7eb89ec13e1cc59"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_15.sbpatch",
+      "timestamp": 1781279578
+    },
+    {
+      "id": "2026.06.12.0003_16",
+      "type": "sbpatch",
+      "hash": {
+        "sha256": "fd338c87d6d548edf0bc63f30b1afffa9c58961b6cdd879127a7a43bd7e11079"
+      },
+      "remote_path": "https://github.com/4410yy/atm-10-repo/releases/download/2026.06.12.0003/2026.06.12.0003_16.sbpatch",
+      "timestamp": 1781279579
     }
   ]
 }
