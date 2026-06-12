@@ -49,9 +49,10 @@ jobs:
           cd "$PACKS_DIR"
           # Rebuild packs forward to ensure the base for the new patch is ready
           for TAG in $ALL_TAGS; do
-            printf "Processing tag: %s\n" "$TAG"
             NEXT_TAG=$(echo "$ALL_TAGS" | grep -A1 "^$TAG$" | tail -n1)
-            if [ "$TAG" != "$NEXT_TAG" ] && [ -f "$TAG.sbpack" ] && [ -f "$NEXT_TAG.sbpatch" ]; then
+            printf "Processing tag %s, next tag is %s\n" "$TAG" "$NEXT_TAG"
+            ls
+            if [ "$TAG" != "$NEXT_TAG" ] && [ -f "$TAG.sbpack"  ] && [ -f "$NEXT_TAG.sbpatch" ]; then
               printf "Rebuilding pack for %s based on %s\n" "$NEXT_TAG" "$TAG"
               sbutils patch "$TAG.sbpack" "$NEXT_TAG.sbpatch" "$NEXT_TAG.sbpack"
             fi
